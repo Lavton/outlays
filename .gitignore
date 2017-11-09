@@ -1,0 +1,8 @@
+*.pickle  
+*.db  
+path.jpg  
+__pycache__  
+*.ipynb  
+*.json
+config.py
+images
