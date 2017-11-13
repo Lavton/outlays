@@ -1,8 +1,10 @@
+import os
 import sqlite3
 import logging
 import config
 
-connection = sqlite3.connect(config.db_name)
+db_name = os.path.join(os.path.dirname(__file__), config.db_name)
+connection = sqlite3.connect(db_name)
 cursor = connection.cursor()
 cursor.execute("""CREATE TABLE IF NOT EXISTS RawBillMain(
         id INTEGER primary key autoincrement, 
