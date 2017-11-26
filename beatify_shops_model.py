@@ -2,6 +2,7 @@ import sql_communicator
 import config
 import os
 import distance
+import pickle
 
 
 def get_shop_bills():
