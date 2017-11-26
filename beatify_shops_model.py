@@ -76,6 +76,8 @@ def groupirize(bills):
 
 def find_throw_canonic(shop_name, all_known_shops):
     candidates = []
+    if not shop_name:
+        return candidates
     for i in range(len(all_known_shops)):
         shps = all_known_shops[i][1].lower()
         if shps == shop_name:
