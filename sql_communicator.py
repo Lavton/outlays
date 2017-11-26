@@ -57,6 +57,36 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS RawBillItems(
         FOREIGN KEY(bill_id) REFERENCES RawBillMain(id)
     );"""
 )
+
+cursor.execute("""CREATE TABLE IF NOT EXISTS CanonShopsNames(
+        id INTEGER primary key autoincrement, 
+        shop_name TEXT,
+        shop_short_descript TEXT NULL
+    );"""
+)
+
+cursor.execute("""CREATE TABLE IF NOT EXISTS CanonRawShopsConnect(
+        id INTEGER primary key autoincrement, 
+        shop_id INTEGER,
+        user TEXT NULL,
+        userInn TEXT NULL,
+        FOREIGN KEY(shop_id) REFERENCES CanonShopsNames(id)
+    );"""
+)
+
+
+cursor.execute("""CREATE TABLE IF NOT EXISTS BeatifyBillMain(
+        id INTEGER primary key, 
+        totalSum INTEGER NULL,
+        shop_name TEXT NULL,
+        shop_id INTEGER NULL,
+        dateTime INTEGER NULL,
+        FOREIGN KEY(id) REFERENCES RawBillMain(id),
+        FOREIGN KEY(shop_name) REFERENCES CanonShopsNames(shop_name),
+        FOREIGN KEY(shop_id) REFERENCES CanonShopsNames(id)
+    );"""
+)
+
 connection.commit()
 
 def has_same_bill_record(bill):
@@ -85,5 +115,58 @@ def get_total_sum_from_date(timestamp):
     my_sum = my_sum[0] / 100
     return my_sum
 
+def get_raw_shops(timestamp):
+    return cursor.execute(
+        "SELECT id, user, userInn, totalSum, dateTime FROM RawBillMain WHERE dateTime>?",
+        (timestamp, )
+    ).fetchall()
+
+
 def commit_changes():
     connection.commit()
+
+def find_shop_on_inn(inn):
+    shops_id = cursor.execute(
+        "SELECT shop_id FROM CanonRawShopsConnect WHERE userInn=?",
+        (inn, )
+    ).fetchall()
+    return shops_id
+
+def find_shop_on_name(user):
+    shops_id = cursor.execute(
+        "SELECT shop_id FROM CanonRawShopsConnect WHERE user=?",
+        (user, )
+    ).fetchall()
+    return shops_id
+
+def get_all_canonic_shops():
+    return cursor.execute(
+        "SELECT id, shop_name, shop_short_descript FROM CanonShopsNames"
+    ).fetchall()
+
+def find_products_on_bill_id(bill_id):
+    return cursor.execute(
+        "SELECT name FROM RawBillItems WHERE bill_id=?",
+        (bill_id, )
+    ).fetchall()
+
+def write_new_synonim(shop_id, user, userInn):
+    exe_str = "INSERT OR REPLACE INTO CanonRawShopsConnect (shop_id,user,userInn) VALUES (?,?,?);"
+    cursor.execute(exe_str, (shop_id, user, userInn))
+
+def write_new_canon_shop(shop_name, shop_descipt):
+    exe_str = "INSERT OR REPLACE INTO CanonShopsNames (shop_name,shop_short_descript) VALUES (?,?);"
+    cursor.execute(exe_str, (shop_name, shop_descipt))
+    return cursor.lastrowid
+
+def write_beatiful_bill(id, totalSum, shop_name, shop_id, dateTime):
+    # чек что не существует чек
+    if bool(len(
+            cursor.execute(
+                "SELECT 1 FROM BeatifyBillMain WHERE id=?",
+                 (id,)).fetchall()
+        )):
+        return 0
+    exe_str = "INSERT OR REPLACE INTO BeatifyBillMain (id,totalSum,shop_name,shop_id,dateTime) VALUES (?,?,?,?,?);"
+    cursor.execute(exe_str, (id, totalSum, shop_name, shop_id, dateTime))
+    return cursor.lastrowid    
