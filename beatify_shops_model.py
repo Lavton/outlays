@@ -103,7 +103,7 @@ def write_new_beautiful_bill(bill, canon_shop):
     return sql_communicator.write_beatiful_bill(bill["id"], bill["totalSum"], canon_shop[1], canon_shop[0], bill["dateTime"])
 
 
-def set_last_data(_last_data):
+def set_last_data(_last_date):
     data_storage_pi = os.path.join(os.path.dirname(__file__), "data_beaut_sh.pickle")
     if not config.debug_mode:
         with open(data_storage_pi, "wb") as f:
