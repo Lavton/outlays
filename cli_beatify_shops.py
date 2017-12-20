@@ -14,7 +14,7 @@ def check_double_if_new(name):
     name = name.lower()
     cands = beatify_shops_model.find_throw_canonic(name, all_known_shops)
     if len(cands) == 1: 
-        return False
+        return -46
     else: 
         ans = input("Это название похоже на {}. Это оно? [Y/n]".format(cands[0][1]))
         if not ans:
@@ -23,15 +23,17 @@ def check_double_if_new(name):
         if ans=="y":
             return cands[0][0]
         else:
-            return False
+            return -46
 
 def checks_new_etc(name, group):
     g = group[0]
     check = check_double_if_new(name)
-    if check:
+    print("check", check)
+    if check != -46:
         write_old_shop(all_known_shops[check], g["name"], g["inn"])
         return check
     else:
+        print("Aaaa")
         all_known_shops.append(write_new_shop(name, g["name"], g["inn"]))
         return len(all_known_shops) - 1
 
