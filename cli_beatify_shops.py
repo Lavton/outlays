@@ -28,12 +28,10 @@ def check_double_if_new(name):
 def checks_new_etc(name, group):
     g = group[0]
     check = check_double_if_new(name)
-    print("check", check)
     if check != -46:
         write_old_shop(all_known_shops[check], g["name"], g["inn"])
         return check
     else:
-        print("Aaaa")
         all_known_shops.append(write_new_shop(name, g["name"], g["inn"]))
         return len(all_known_shops) - 1
 
