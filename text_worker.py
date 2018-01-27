@@ -2,6 +2,7 @@ import sql_communicator
 import logging
 
 
+
 def save(date, message):
     """
     save info from message in DB with datetime=`date`
@@ -10,13 +11,20 @@ def save(date, message):
     shop_name
     sum1 item1
     sum2 item2
+
+    or for unimportnant - just `sum`
     """
     (total_saved_bills, total_saved_sum, total_saved_items) = (0, 0, 0)
     message = message.strip()
     lines = message.split("\n")
     if len(lines) == 1:
-        logging.info("this is not record: " + str(message))
-        return (total_saved_bills, total_saved_sum, total_saved_items)
+        try:
+            price = float(lines[0])
+            message = "{}\n{} {}".format("Неважно", price, "Неважно")
+            lines = message.split("\n")
+        except ValueError as e:
+            logging.info("this is not record: " + str(message))
+            return (total_saved_bills, total_saved_sum, total_saved_items)
 
     shop_name = lines[0]
     total_sum = 0
