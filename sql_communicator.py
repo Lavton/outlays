@@ -115,6 +115,13 @@ def get_total_sum_from_date(timestamp):
     my_sum = my_sum[0] / 100
     return my_sum
 
+def get_summary_from_date(timestamp, limit=10):
+    summary = cursor.execute(
+        "SELECT sum(totalSum)/100, shop_name FROM BeatifyBillMain WHERE dateTime>? GROUP BY shop_id ORDER BY sum(totalSum) DESC LIMIT ?",
+        (timestamp, limit)
+    ).fetchall()
+    return summary
+
 def get_raw_shops(timestamp):
     return cursor.execute(
         "SELECT id, user, userInn, totalSum, dateTime FROM RawBillMain WHERE dateTime>?",
